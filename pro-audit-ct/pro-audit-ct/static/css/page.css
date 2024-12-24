@@ -1,0 +1,31 @@
+.page-ul{
+    border:1px solid rgb(221,221,221);
+    border-radius:5px;
+    width:auto;
+    float:left;
+    padding:0;    
+}
+.page-li{
+    list-style-type:none;
+    float:left;
+    display:inline-block;
+    border-left:1px solid rgb(221,221,221);
+    padding:5px;
+    width:60px;
+    text-align:center;
+    margin:0 auto;
+}
+.page-num{
+    width:40px;
+}
+.current{
+    width:40px;
+    background:rgb(244,244,244);
+}
+.page{
+    overflow: auto; 
+    zoom: 1;
+}
+.page-msg {
+    line-height: 30px
+}

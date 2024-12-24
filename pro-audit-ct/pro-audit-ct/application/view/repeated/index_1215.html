@@ -1,0 +1,213 @@
+{include file="common/header"}
+<style>
+#table thead td{font-size:14px;font-weight:bold;}
+#table tbody td{font-size:14px;}
+#table tbody td a{color: #C0C9E1;}
+-#table .img-type p a{background-color: rgba(236, 177, 75, 0.2);color: #ECB14B;}
+#table .img-type p{margin:3px 5px;}
+#table .img-type p.type-bg{background-color: rgba(51, 190, 139, 0.3);}
+#table .img-type p.type-bg a{color: #34C38F;}
+#table .img-type p.type-br{background-color: rgba(255, 0, 0, 0.3);}
+#table .img-type p.type-br a{color: #e32929;}
+.page{padding-bottom:20px;}
+#table .zd{display:inline-block;background-color: #3251ff;padding:2px 5px;margin-right:5px;cursor:pointer;}
+.ddd{}
+.contentBox{height:calc(100vh - 93px) !important;}
+</style>
+        <div class="contentBox">
+            <div class="list-tool">
+					<button id="fh" style="display:none;margin:0 -18px 0 20px;" class="search" onclick="location.href='{$Think.session.oindex}';"><<返回母单</button>
+<!--					<button class="search" onclick="window.location.href='{:U('/repeated/index', ['type'=>I('type'), 'status'=>I('status'), 'fyid'=>I('fyid')])}';">全部</button>-->
+					<form action="{:U('/repeated')}" style="display:inline;">
+						<input type="hidden" name="fyid" value="{:I('fyid')}">
+						<select id="type" name="type" style="margin:0 2px;width:80px;"><option value="0" selected>母单</option><option value="1">子单</option></select>{if condition="$Think.session.user.gtype eq 0"}
+<!--						<select id="ztype" name="ztype" style="margin:0 2px;width:80px;" disabled><option value="">全部</option><option value="0">公共项</option><option value="1">子项</option></select>{/if}-->
+<!--						<select id="status" name="status" style="margin:0 2px;width:80px;"><option value="">全部</option><option value="0">待审核</option><option value="1">合格</option><option value="2">不合格</option></select>-->
+						<select id="place" name="place" class="form-control type" style="margin:0 2px;width:140px;display:inline;"><option value="">管理所</option></select>
+						<select id="station" name="station" class="form-control type" style="margin:0 2px;width:90px;display:inline;" disabled><option value="">管理站</option></select>
+
+
+						<input style="margin:0;width:100px;" value="{$start}" class="tiem_put" id="start" name="start" placeholder="开始日期" readonly />
+						<span>-</span>
+						<input style="margin:0;width:100px;" value="{$end}" class="tiem_put" id="end" name="end" placeholder="结束日期" readonly />
+
+						<button style="margin:0 2px" class="search" type="submit">搜索</button>
+                        <button style="margin:0 2px" class="" type="button" onclick="download()">下载</button>
+					</form>
+					<button style="margin:0 2px;" class="refresh" onclick="window.location.reload();">刷新</button>
+                </div>
+            <div class="tab-space">
+                <!--<p class="title-page">共<span>41356</span>条记录&nbsp;&nbsp;&nbsp;&nbsp;1655页</p>-->
+                <table class="list-tab" id="table">{if $otype}
+                    <thead>
+                        <tr>
+                            <td>工单号</td>
+                            <td width="5%">接管编号</td>
+                            <td width="5%">日期</td>
+                            <td width="10%">小区</td>
+                            <td>地址</td>
+                            <td width="10%">管理所</td>
+                            <td width="10%">管理站</td>
+                            <td width="10%">维保单位</td>
+                            <td width="5%">设备类型</td>
+                            <td width="5%">容积(m³)</td>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+					{foreach name="data" item="val"}
+                        <tr onclick="location.href='{:U(\'/likes/index\', [\'addr\'=>$val.gid])}'" style="cursor: pointer;">
+                            <td><a href="{:U('/likes/index', ['addr'=>$val.gid])}" class="cf"><span>{$val.gid}</span></a></td>
+                            <td>{$val.takeover_no}</td>
+                            <td>{:substr($val.etime, 0, 10)}</td>
+                            <td>{$val.village}</td>
+                            <td>{$val.addr}</td>
+                            <td>{$tmp['place'][$val.place]}</td>
+                            <td>{$val.station_name}</td>
+                            <td>{$val.office_name}</td>
+
+                            <td>{$val.equipment_type}</td>
+                            <td>{$val.volume == '' ? 0 : $val.volume}</td>
+                        </tr>
+					{/foreach}
+                    </tbody>{else}
+                    <thead>
+                        <tr>
+
+                            <td width="5%">接管编号</td>
+                            <td width="5%">日期</td>
+                            <td width="10%">小区</td>
+                            <td width="15%">地址</td>
+                            <td width="10%">管理所</td>
+                            <td width="10%">管理站</td>
+                            <td width="10%">维保单位</td>
+                            <td width="5%">水箱个数</td>
+                            <td width="10%">水箱容积</td>
+                            <td width="5%">水池个数</td>
+                            <td width="10%">水池容积</td>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+					{foreach name="data" item="val"}
+                        <tr onclick="window.location.href='{:U('/repeated/index', ['type'=>1, 'fyid'=>$val.yid])}';" style="cursor: pointer">
+                            <td>{$val.takeover_no}</td>
+                            <td>{:substr($val.etime, 0, 10)}</td>
+                            <td>{$val.village}</td>
+                            <td>{$val.village_addr}</td>
+                            <td>{$tmp['place'][$val.place]}</td>
+                            <td>{$val.station_name}</td>
+                            <td>{$val.office_name}</td>
+                            <td>{$val.tank_count == '' ? 0 : $val.tank_count}</td>
+                            <td>{$val.tank_volume == '' ? '0.00' : $val.tank_volume}</td>
+                            <td>{$val.pool_count == '' ? 0 : $val.pool_count}</td>
+                            <td>{$val.pool_volume == '' ? '0.00' : $val.pool_volume}</td>
+
+                        </tr>
+					{/foreach}
+                    </tbody>{/if}
+                </table>
+            </div>
+			{$page}
+        </div>
+<script src="_STATIC_/js/plugins/layer/laydate/laydate.js"></script>
+<script>
+    function download(){
+
+        if('{:I('fyid')}' != ''){
+            location.href= '{:U(\'/repeated/download\', [\'type\'=>1, \'fyid\'=>I(\'fyid\') ])}'
+        }else{
+            var type = $("#type").val()
+            location.href= '{:U(\'/repeated/download\', [\'start\'=>$start, \'end\'=>$end, \'place\'=>I(\'place\'), \'station\'=>I(\'station\') ])}' + '&type=' + type
+        }
+    }
+
+var tmp = {$tmp ? json_encode($tmp, 320) : '[]'}, fs6 = {$fs6 ? json_encode(array_values($fs6), 320) : '[]'}, yps = {$yps ? json_encode($yps, 320) : '[]'}, param = {:json_encode(input('param.'), 320)}, cs = [], ctpl = ['', ''], st = '';
+console.log(fs6);
+$(function(){
+	$('.h_orders').addClass('active');
+	$.each(tmp, function(i, v){
+		var h = '';
+		$.each(v, function(i2, v2){
+			if(i == 'station') st += '<option pid="'+ v2[2] +'" value="'+ v2[0] +'">'+ v2[1] +'</option>'; else h += '<option value="'+ i2 +'">'+ v2 +'</option>';
+		});
+		$('#'+i).append(h);
+	});
+	$.each(fs6, function(t, f){
+		ctpl[f.type] += '<p class="type-br"><a href="{:U('/orders/detail')}?type='+ f.id +'&id=#####">'+ f.name +'(<c class="c'+ f.id +'">0</c>)</a></p>';
+	});
+	ctpl[1] += '<p><a href="{:U('/orders/detail')}?type=0&id=#####" title="">其它(<c class="c0">0</c>)</a></p>';
+	//console.log(ctpl);
+	$('.img-type').each(function(){
+		var _t = $(this), r = '' + _t.data('rs'), k = '' + _t.data('ks'), rs = r.split(','), ks = k.split(','), ps = 0;
+		_t.append(ctpl[parseInt(_t.data('type'))].replace(new RegExp('#####', "gm"), _t.data('id')));
+		if(r != ''){$.each(rs, function(i1, v1){
+			vs = v1.split(':');
+			cc = parseInt(vs[1]);
+			ps += cc;
+			tps = _t.find('.c'+yps[vs[0]]);
+			tps = tps.length ? tps : _t.find('.c0');
+			tps.text(cc + parseInt(tps.text()));
+		});}
+		if(k != ''){$.each(ks, function(i1, v2){
+			_t.find('.c'+v2).parent().parent().removeClass('type-br').addClass('type-bg');
+		});}
+		_t.parent().parent().find('.ps').text(ps);
+	});
+	$('.page .current').css({'background': '#3251FF'});
+	//$('.page .page-li.page-num.current').css({'padding': '0 10px'});
+	$('.page .page-li').css('display', 'inline-block');
+	$('.page .page-li input').css({'width':'50px', 'background':'#2B4563', 'border': '1px solid #7591BE', 'border-radius': '6px', 'display': 'inline-block', 'color': 'rgba(255,255,255,0.65)', 'margin-right': '5px'});
+	$('.page .page-msg, .page ul').css('display', 'inline-block');
+	$('.page .page-msg .rows').css({'font-size': '16px', 'background':'none'});
+	var start={elem:"#start",format:"YYYY-MM-DD",max:'2028-05-01',min:"2020-10-01",istime:false,istoday:true,choose:function(datas){end.min=datas;end.start=datas}};
+	var end={elem:"#end",format:"YYYY-MM-DD",max:'2028-05-01',min:"2020-10-01",istime:false,istoday:true,choose:function(datas){start.max=datas}};
+	laydate(start);laydate(end);
+	$('#cs').val('{:I('cs')}');
+	$('#type').val('{$otype}').change(function(){
+		if($(this).val() == '1') $('#ztype').removeAttr('disabled'); else $('#ztype').attr('disabled', 'disabled');
+	});
+	$('#ztype').val('{:I('ztype')}');
+	$('#status').val('{:I('status')}');
+	//$('#gdtype').val('{:I('gdtype')}');
+	
+	function sst(pid){
+		if(pid == '') $('#station').attr('disabled', 'disabled'); else $('#station').removeAttr('disabled');
+		$('#station').append(st);
+		$('#station option').each(function(){
+			if($(this).val() != '' && $(this).attr('pid') != pid) $(this).remove();
+		});
+		$('#station').val('');
+	}
+	$('#place').val('{:I('place')}').change(function(){
+		sst($(this).val());
+	});
+	sst('{:I('place')}');
+	$('#station').val('{:I('station')}');
+	$('#office').val('{:I('office')}');
+	$('c').each(function(){
+		if(parseInt($(this).text()) == 0) $(this).parent().removeAttr('href');
+	});
+	$('.cf').each(function(){
+		if(parseInt($(this).text()) == 0) $(this).removeAttr('href');
+	});
+	if('{:I('fyid')}' != ''){
+		$('#type, #place, #station, #office').remove();
+		$('#fh').show();
+	}
+	if('{:I('type')}' == '1'){
+		$('#ztype').removeAttr('disabled');
+	}
+	if('{$Think.session.user.type}' == 2){
+		$('#place').hide();
+		sst('{$Think.session.user.office}');
+	}
+	if('{$Think.session.user.type}' == 3){
+		$('#place').hide();
+		$('#station').hide();
+	}{if !$otype}
+	$('#status').remove();
+	{/if}
+});
+</script>
+{include file="common/footer"}

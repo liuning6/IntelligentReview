@@ -1,0 +1,149 @@
+{include file="common/header"}
+        <div class="content_box">
+            <div class="setting">
+                <div class="have-bg" style="width:560px;margin:30px auto;">
+                <table class="list-tab" id="table" style="width:100%;margin:0 auto">
+                    <thead>
+                    <tr>
+                        <td width="25%" style="text-align:center;">分类</td>
+                        <td width="25%" style="text-align:center;">相似度</td>
+                        <td width="25%" style="text-align:center;">是否查重</td>
+                        <td width="25%" style="text-align:center;">查重天数</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {foreach name="ls" key="i" item="s"}
+                    <tr class="item" value="{$s['mcid']}">
+                        <td style="text-align: center">{$s['mcname']}</td>
+                        <td style="text-align: center"><input name="matching_{$s['mcid']}" id="matching_{$s['mcid']}" placeholder="图片相似度" type="text" style="width:60px;padding:2px 0 0 5px" value="{$s['matching']}"> %</td>
+                        <td style="text-align: center">
+                            <input type="radio" id="deleted_{$s['mcid']}_0" name="deleted_{$s['mcid']}" value="0" style="width:20px" {if condition="$s['deleted']==0"} checked="checked" {/if}>
+                            是
+                            <input type="radio" id="deleted_{$s['mcid']}_1" name="deleted_{$s['mcid']}" value="1" style="width:20px" {if condition="$s['deleted']==1"} checked="checked" {/if}>
+                            否
+                        </td>
+                        <td style="text-align: center">
+                            <select id="cp_days_{$s['mcid']}" name="cp_days_{$s['mcid']}" data-val="{$s['cp_days']}">
+                                <option value=""> 查重天数 </option>
+                                <option value="1">1 天</option>
+                                <option value="2">2 天</option>
+                                <option value="3">3 天</option>
+                                <option value="4">4 天</option>
+                                <option value="5">5 天</option>
+                                <option value="6">6 天</option>
+                                <option value="7">7 天</option>
+                                <option value="8">8 天</option>
+                                <option value="9">9 天</option>
+                                <option value="10">10 天</option>
+                                <option value="11">11 天</option>
+                                <option value="12">12 天</option>
+                                <option value="13">13 天</option>
+                                <option value="14">14 天</option>
+                                <option value="15">15 天</option>
+                            </select>
+                        </td>
+                    </tr>
+                    {/foreach}
+                    </tbody>
+                    <tr>
+                        <td colspan="4" style="text-align: center;border-bottom-width:0"><button class="login-btn" style="width:118px;margin-top: 12px;" onclick="qr()"> 确认 </button></td>
+                    </tr>
+                </table>
+
+                </div>
+            </div>
+        </div>
+	<script src="_STATIC_/js/jquery.min.js"></script>
+<script>
+$(function(){
+    $('.h_manager').addClass('active');
+    $('.drop-down-content li a').each(function(index,item){if("查重设置"==item.innerHTML){item.className="active"}})
+});
+    $(function(){
+        $(".setting .item").each(function(){
+            var mcid = $(this).attr("value");
+            var cpdays = $('#cp_days_'+mcid).data("val");
+            var matching = Math.round(parseFloat($('#matching_'+mcid).val())*100)/100;
+            $('#matching_'+mcid).val(matching);
+            $('#cp_days_'+mcid).val(cpdays).attr("disabled", $('input[name=deleted_'+mcid+"]:checked").val() ==="1");
+            // console.log(item.find("matching"))
+            $('input[name=deleted_'+mcid+"]").click(function(){
+                if(this.value==='1'){
+                    $("#cp_days_"+mcid).attr("disabled", true);
+                }else{
+                    $("#cp_days_"+mcid).attr("disabled", false);
+                }
+
+            });
+        });
+    });
+
+    function qr() {
+        var settings = [];
+        var i = 0;
+        var validated = true;
+        $(".setting .item").each(function(){
+            var mcid = $(this).attr("value");
+            var matching = $('#matching_'+mcid).val();
+            if($.trim(matching) === ""){
+                alert("请输入相似度!");
+                $('#matching_'+mcid).focus();
+                validated = false;
+                return;
+            }
+            if(!$.isNumeric(matching)){
+                alert("相似度必须是数字!");
+                $('#matching_'+mcid).focus();
+                validated = false;
+                return;
+            }
+            if(parseFloat(matching)>100 || parseFloat(matching)<90){
+                alert('相似度必须为90到100之间的数字');
+                $('#matching_'+mcid).focus();
+                validated = false;
+                return;
+            }
+            if(String(Math.round(parseFloat(matching)*100)/100) != matching ){
+                alert('相似度最多2位小数');
+                $('#matching_'+mcid).focus();
+                validated = false;
+                return;
+            }
+            var cpdays = $('#cp_days_'+mcid).val();
+            if(cpdays === ""){
+                alert('请输入查重天数!');
+                $('#cp_days_'+mcid).focus();
+                validated = false;
+                return;
+            }
+            settings[i++] ={
+                mcid: mcid,
+                matching: matching,
+                deleted: $('input[name=deleted_'+mcid+"]:checked").val(),
+                cp_days: $('#cp_days_'+mcid).val(),
+            };
+            // console.log($('input[name=deleted_3]:checked').val())
+        });
+        if(!validated){
+            return;
+        }
+        console.log(settings);
+        $.ajax({
+            url:"?action=update",
+            type:"post",
+            data: JSON.stringify(settings),
+            dataType:"json",
+            contentType : 'application/json',
+            success:function (re) {
+                alert(re["msg"]);
+            }
+        });
+    }
+
+</script>
+<style>
+    #table thead td{font-size:15px;font-weight:bold;}
+    #table tbody td{font-size:14px;}
+    #table tbody td a{color: #C0C9E1;}
+</style>
+{include file="common/footer"}

@@ -1,0 +1,282 @@
+{include file="common/header"}
+<style>
+.imgShow thead td{font-weight: bold;font-size: 16px;}
+.imgShow tbody td .imgs{text-align: left;margin-left:60px;/*width: 100%;*/height: 350px;overflow-x: hidden;}
+.imgs .show-image {height: 345px;}
+.show-image {width: 280px;height: 350px;}
+.img-text{width:265px;}
+.img-text{font-size: 13px;}
+.img-text .b {font-weight: bold;font-size: 20px;}
+.show-image button{position:relative;left: 210px;top: -350px;width: 60px;background: #0091FF;color: #fff;cursor: pointer;border: 1px solid #246699; border-radius: 2px; height: 36px;line-height: 36px;}
+.page{padding-bottom:20px;}
+
+
+.contentBox {
+    height: calc(100vh - 93px);
+}
+.list-tool{display:none;}
+.ctl{height:60px;border-right: 1px solid #17294D;}
+.tab-space {padding-bottom:16px;}
+.list-tab tbody td{border: 1px solid #17294D;}
+#lps, #rps{height: calc(100vh - 191px);}
+.ps{overflow-y:scroll;}
+#rps img{width: 90px;height: 120px;margin:5px;border-radius: 6px;}
+.m{margin-bottom:10px;}
+.imgShow thead td, .imgShow tbody td {text-align: left;}
+tr,td{vertical-align: top;}
+#dq, #submit{width: 70px;height: 28px;background: #3251FF;border-radius: 2px;font-size: 12px;color: #EEF4FF;cursor: pointer;border: 1px solid #434C68;}
+#dq{margin: 0 30px 0 -150px;}
+#submit{margin-right: 30px;}
+::-webkit-scrollbar {
+width: 1px;
+}
+</style>
+        <div class="contentBox">
+            <div class="list-tool">
+				<button class="search" onclick="window.location.href='{:U('/likes')}';">全部</button>
+				<form action="{:U('/likes')}" style="display:inline;">
+					<!--<select id="gdtype" name="gdtype" style="margin-left:25px;"><option value="">作业类型</option><option value="1">水箱清洗</option><option value="2">水池清洗</option></select>-->
+					<select id="type" name="type" style="margin:0 2px;width:80px;"><option value="">类型</option><option value="0">母单</option><option value="1">子单</option></select>
+					<select id="place" name="place" class="form-control type" style="margin:0 2px;width:140px;display:inline;"><option value="">管理所</option></select>
+					<select id="station" name="station" class="form-control type" style="margin:0 2px;width:90px;display:inline;"><option value="">管理站</option></select>
+					<select id="office" name="office" class="form-control type" style="margin:0 2px;width:90px;display:inline;"><option value="">维保单位</option></select>
+					<input style="margin:0 2px;" value="{:I('addr')}" class="adress" type="text" placeholder="工单编号 / 地址" name="addr" />
+
+					<input style="margin:0" value="{:I('start')}" class="tiem_put" id="start" name="start" placeholder="开始日期" readonly />
+					<span>-</span>
+					<input style="margin:0" value="{:I('end')}" class="tiem_put" id="end" name="end" placeholder="结束日期" readonly />
+					<select name="type" style="width:90px;margin:0 2px;" id="fs2"><option value="">图片分类</option></select>
+					<select id="matching" name="matching" style="width:80px;margin:0 2px;">
+						<option value="">相似度</option>
+						<!--<option value="80">≥80</option>
+						<option value="81">≥81</option>
+						<option value="82">≥82</option>
+						<option value="83">≥83</option>
+						<option value="84">≥84</option>
+						<option value="85">≥85</option>
+						<option value="86">≥86</option>
+						<option value="87">≥87</option>
+						<option value="88">≥88</option>
+						<option value="89">≥89</option>-->
+						<option value="90">≥90</option>
+						<option value="91">≥91</option>
+						<option value="92">≥92</option>
+						<option value="93">≥93</option>
+						<option value="94">≥94</option>
+						<option value="95">≥95</option>
+						<option value="96">≥96</option>
+						<option value="97">≥97</option>
+						<option value="98">≥98</option>
+						<option value="99">≥99</option>
+					</select>
+
+					<button style="margin:0 2px" class="search" type="submit">搜索</button>
+				</form>
+				<button style="margin:0 2px;" class="refresh" onclick="window.location.reload();">刷新</button>
+            </div>
+            <div class="tab-space">
+                <!--<p class="title-page">共<span>41356</span>条记录&nbsp;&nbsp;&nbsp;&nbsp;1655页</p>-->
+                <table class="list-tab imgShow">
+                    <thead>
+                        <tr class="ctl">
+                            <td width="50%">
+								工单照片
+								<select id="ls"><option value="">请选择分类</option></select>
+								<input style="margin:0 10px 0 30px;" type="checkbox" id="all" />全选
+								
+							</td>
+                            <td width="50%">
+								<button id="dq">丢弃</button>
+								<button id="submit">归档 >></button>
+								归档照片
+								<select id="rs"><option value="">请选择分类</option></select>
+							</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="lps"><div class="ps"></div></td>
+                            <td id="rps"><div class="ps"></div></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+<script src="_STATIC_/js/plugins/layer/layer.min.js"></script>
+<script src="_STATIC_/js/plugins/layer/laydate/laydate.js"></script>
+<script>
+var load = layer.load(1, {shade: [0.5, '#000']}), tmp = {$tmp ? json_encode($tmp, 320) : '[]'}, st = '';
+$(function(){
+	setTimeout(function(){layer.close(load);}, 100);
+	$('.h_likes').addClass('active');
+	$.each(tmp, function(i, v){
+		var h = '';
+		$.each(v, function(i2, v2){
+			if(i == 'ls') h += '<option value="'+ v2.id +'" pcid="'+ v2.pcid +'">'+ v2.name +'</option>'; else h += '<option value="'+ v2.id +'" pid="'+ v2.pid +'" title="'+ v2.name +'">'+ v2.title +'（'+ v2.name +'）</option>';
+		});
+		$('#'+i).append(h);
+	});
+	
+	function dir(name){
+		$('#rps .ps').html('');
+		if(name == ''){
+			layer.close(load);
+			return;
+		}
+		load = layer.load(1, {shade: [0.5, '#000']});//layer.close(load);return;
+		$.post('?', {t:2, dir:name}, function(d){
+			$.each(d, function(i, v){
+				$('#rps .ps').append('<img src="/source/labels/'+ name + '/' + v +'" />');
+			});
+			layer.close(load);
+		}, 'json');
+	}
+	
+	$('#ls').change(function(){
+		$('#lps .ps').html('');
+		if($(this).val() == ''){
+			layer.close(load);
+			return;
+		}
+		var load = layer.load(1, {shade: [0.5, '#000']}), ycode = $(this).val();
+		$.post('?', {t:1, ycode:ycode}, function(d){
+			$.each(d, function(i, v){
+				$('#lps .ps').append('<div class="show-image m" data-pid="">\
+                                    <a target="_blank" href="/source/pics/'+ v.etime.replace('-', '').substr(0,6) +'/'+ v.oid +'/'+ v.filename +'.'+ v.extension +'"><img src="/source/pics/'+ v.etime.replace('-', '').substr(0,6) +'/'+ v.oid +'/'+ v.filename +'.'+ v.extension +'" data-title="'+ v.id +' '+ v.ycode +'" /></a>\
+									<div class="img-text">\
+										<p>工单编号:'+ v.gid +' &nbsp; ' + v.etime + '</p>\
+										<p><input style="margin-right:10px;" type="checkbox" value="'+ v.id +'" />'+ v.addr +'<p>\
+									</div>\
+                                </div>');
+			});
+			d = $('#rs option[pid='+ $('#ls option:selected').attr('pcid') +']:first');
+			d.attr("selected", true);
+			dir(d.attr('title'));
+		});
+		$('#all').prop('checked', false);
+	});
+	$('#rs').change(function(){
+		load = layer.load(1, {shade: [0.5, '#000']});
+		dir($(this).find("option:selected").attr('title') || '');
+	});
+	$('#all').click(function(){
+		if($(this).is(':checked') == true) $('#lps input:checkbox').prop("checked", true); else $('#lps input:checkbox').prop("checked", false);
+	});
+	
+	$('#dq').click(function(){
+		if(!$('#lps input:checked').length){layer.msg('请选择照片', {icon: 2, shade: 0.5, time: 1000});return false;}
+		if(confirm('确定丢弃选中的照片吗？')){
+			layer.msg('正在处理，请稍后。。。', {icon:1, time:6000000});
+			layer.load(1, {shade: [0.5, '#000']});
+			var ids = [];
+			$('#lps input:checked').each(function(i, v){ids.push($(this).val())});
+			console.log(ids);
+			$.post('?', {t:4, ids:ids, dir:$('#rs').find("option:selected").attr('title')}, function(d){
+				layer.closeAll();
+				console.log(d);
+				if(d == 1){
+					layer.msg('处理成功', {icon: 6, shade: 0.5, time: 1000});
+					$('#lps input:checked').each(function(i, v){
+						m = $(this).parents('.m');
+						m.remove();
+					});
+					$('#all').prop('checked', false);
+				}else layer.msg(d, {icon: 2, shade: 0.5, time: 5000});
+			}, 'json');
+		}
+	});
+	
+	$('#submit').click(function(){
+		if(!$('#lps input:checked').length){layer.msg('请选择照片', {icon: 2, shade: 0.5, time: 1000});return false;}
+		if(confirm('确定归档选中的照片吗？')){
+			layer.msg('正在处理，请稍后。。。', {icon:1, time:6000000});
+			layer.load(1, {shade: [0.5, '#000']});
+			var ids = [];
+			$('#lps input:checked').each(function(i, v){ids.push($(this).val())});
+			console.log(ids);
+			$.post('?', {t:3, ids:ids, dir:$('#rs').find("option:selected").attr('title'), cid:$('#rs').val()}, function(d){
+				layer.closeAll();
+				console.log(d);
+				if(d == 1){
+					layer.msg('处理成功', {icon: 6, shade: 0.5, time: 1000});
+					$('#lps input:checked').each(function(i, v){
+						m = $(this).parents('.m');
+						$('#rps img:first').before('<img src="'+ m.find('img').attr('src') +'" />');
+						m.remove();
+					});
+					$('#all').prop('checked', false);
+				}else layer.msg(d, {icon: 2, shade: 0.5, time: 5000});
+			}, 'json');
+		}
+	});
+	
+	var hh = $('#lps').height();
+	$('.ps').css({'height':hh+'px'});
+	$(window).resize(function(){hh = $('#lps').height();$('.ps').css({'height':hh+'px'});});;
+	
+	$('.page .current').css({'background': '#3251FF'});
+	//$('.page .page-li.page-num.current').css({'padding': '0 10px'});
+	$('.page .page-li').css('display', 'inline-block');
+	$('.page .page-li input').css({'width':'50px', 'background':'#2B4563', 'border': '1px solid #7591BE', 'border-radius': '6px', 'display': 'inline-block', 'color': 'rgba(255,255,255,0.65)', 'margin-right': '5px'});
+	$('.page .page-msg, .page ul').css('display', 'inline-block');
+	$('.page .page-msg .rows').css({'font-size': '16px', 'background':'none'});
+	var start={elem:"#start",format:"YYYY-MM-DD",max:'2028-05-01',min:"2020-10-01",istime:false,istoday:true,choose:function(datas){end.min=datas;end.start=datas}};
+	var end={elem:"#end",format:"YYYY-MM-DD",max:'2028-05-01',min:"2020-10-01",istime:false,istoday:true,choose:function(datas){start.max=datas}};
+	laydate(start);laydate(end);
+	$('#status').val('{:I('status')}');
+	$('#type').val('{:I('type')}');
+	//$('#gdtype').val('{:I('gdtype')}');
+	function sst(pid){
+		$('#station').append(st);
+		$('#station option').each(function(){
+			if($(this).val() != '' && $(this).attr('pid') != pid) $(this).remove();
+		});
+		$('#station').val('');
+	}
+	$('#place').val('{:I('place')}').change(function(){
+		sst($(this).val());
+	});
+	sst('{:I('place')}');
+	$('#station').val('{:I('station')}');
+	$('#office').val('{:I('office')}');
+	$('#fs2').val('{:I('type')}');
+	$('#matching').val('{:I('matching')}');
+	/*$('.pc').click(function(){
+		$(this).unbind('click');
+		$.post('{:U('/likes/pc')}', {lid:$(this).data('lid')}, function(d){
+			location.reload();
+		});
+	});*/
+	if('{$Think.session.user.type}' == 2){
+		$('#place').hide();
+		sst('{$Think.session.user.office}');
+	}
+	if('{$Think.session.user.type}' == 3){
+		$('#place').hide();
+		$('#station').hide();
+	}
+	{if condition="$Think.session.user.uid eq 0"}$('.show-image').mouseover(function(){
+		if(!$(this).find('button').length) $(this).append('<button>排除</button>');
+		$(this).find('button').show();
+	}).mouseout(function(){
+		$(this).find('button').hide();
+	}).on("click", "button", function(){
+		var p = $(this).parent(), pid = p.data('pid'), type = $(this).parent().hasClass('m') ? 1 : 0;
+		$.post('{:U('/likes/pc')}', {pid:pid, type:type}, function(d){
+			ptr = p.parents('tr');
+			if(type == 1){
+				ptr.remove();
+				return false;
+			}
+			imgs = p.parent('.imgs').find('.show-image').length;
+			if(imgs == 1){
+				ptr.remove();
+				return false;
+			}
+			p.remove();
+		});
+	});{/if}
+});
+</script>
+{include file="common/footer"}

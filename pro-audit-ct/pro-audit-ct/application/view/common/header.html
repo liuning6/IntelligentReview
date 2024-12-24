@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+    <meta name="renderer" content="webkit" />
+    <title>{$title} - 二次供水AI智能审核系统</title>
+    <!--[if lt IE 9]>
+    <script src="_STATIC_/js/html5shiv.min.js"></script>
+    <script src="_STATIC_/js/respond.min.js"></script>
+    <![endif]-->
+    <link href="_STATIC_/css/reset.css" rel="stylesheet">
+    <link href="_STATIC_/css/style.css" rel="stylesheet">
+    <script src="_STATIC_/js/jquery.min.js"></script>
+    <script src="_STATIC_/js/crypto-js.js"></script>
+    <!--[if lt IE 9]>
+    <script src="_STATIC_/js/jquery-1.11.3.min.js"></script>
+    <![endif]-->
+    <style>
+        body{
+            background-color: rgba({$tc[0]}) !important;/*背景色*/
+        }
+        .list-tool{
+            background-color:rgba({$tc[1]}) !important; /*卡片背景色--头部*/
+        }
+
+        .contentBox h1 span,
+        .list-tool{
+            border-bottom-color: rgba({$tc[8]}) !important;/*分割线*/
+        }
+
+        .list-tool select option:hover,
+        .leftBox,
+        .rightBox,
+        .rLeft-cent,
+        .rRight-cent,
+        .tab-space,
+        .data-statistics,
+        .mid-picBox,
+        .btmBox,
+        .have-bg{
+            background-color:rgba({$tc[1]}) !important; /*卡片背景色--主体*/
+        }
+
+        .list-tool select option:hover,
+        .banner-list li a:hover,
+        .drop-down:hover,
+        .banner-list li a.active,
+        .drop-down:hover{
+            color:rgba({$tc[2]}) !important; /*常规按钮色*/
+        }
+
+        .theme button,
+        .layui-layer-btn .layui-layer-btn0,
+        .login-btn,
+        .list-tool button.refresh,
+        .list-tool button{
+            background-color:rgba({$tc[2]}) !important; /*常规按钮色*/
+            border: none !important;/*常规按钮色*/
+        }
+        .page input{
+            border: 1px solid rgba({$tc[3]}) !important;/*输入框色*/
+            background-color: transparent !important;/*输入框背景色*/
+            color: rgba({$tc[9]}) !important;/*文字色*/
+        }
+        .list-tool select{
+            border: 1px solid rgba({$tc[5]}) !important;/*线框按钮色*/
+        }
+
+        .list-tab thead td{
+            background-color: rgba({$tc[4]}) !important;/*列表选择栏色*/
+        }
+
+        .list-tool input{
+            border: 1px solid rgba({$tc[5]}) !important;/*线框按钮色*/
+            background-color: transparent !important;
+            color: rgba({$tc[9]}) !important;/*文字色*/
+        }
+        #table button,
+        .page span.current,
+        .page span.current li.current,
+        .page a,
+        .page span{
+            background-color: rgba({$tc[6]}) !important;/*次要按钮色*/
+            color: rgba({$tc[9]}) !important;/*文字色*/
+        }
+
+        input:disabled {
+            border: 1px solid rgba({$tc[7]}) !important;/*禁用按钮色*/
+            background-color: rgba({$tc[7]}) !important;/*禁用按钮色*/
+            color: rgba({$tc[9]}) !important;/*文字色*/
+        }
+
+        .list-tab thead td,
+        .theme button,
+        .layui-layer-btn .layui-layer-btn0,
+        .login-btn,
+        .list-tool button.refresh,
+        .list-tool button,
+        body,
+        #table tbody td a,
+        .contentBox h1,
+        .contentBox h3,
+        .manage-block h4,
+        #zj{
+            color: rgba({$tc[9]}) !important;/*文字色*/
+        }
+    </style>
+
+{eq name="isDefaultTheme" value="1"}
+ <style>
+     .list-tab thead td,
+     .theme button,
+     .layui-layer-btn .layui-layer-btn0,
+     .login-btn,
+     .list-tool button.refresh,
+     .list-tool button{
+         color: white !important; /*默认主题固定白色*/
+     }
+ </style>
+{/eq}
+</head>
+<script>
+    $(function () {
+        // console.log('init');
+        if ('{$Think.session.user.type}' == 0) {
+            $("#link_stat").show();
+        }
+    })
+</script>
+<!--
+    {$Think.session.user.username}
+    {$Think.session.user.office}
+-->
+<body>
+    <style>
+        .banner-list li {
+            font-size: 18px;
+            margin-top: 8px;
+        }
+
+        .drop-down-content li a {
+            font-size: 16px;
+        }
+
+        .index3, .set1, .set2, .set3 {
+            display: none;
+        }
+    </style>
+    <div class="top-banner" style="height:60px;">
+        <div class="logo" style="width:25%;"><a href="{:U('/index');}"><img style="height:41px;" src="_STATIC_/images/logo.png"></a></div>
+        <div class="banner-list">
+            <ul>
+                <li class="index{$Think.session.user.type}"><a class="h_index" href="{:U('/index');}">首页</a></li>
+                <li class="drop-down">
+                    <a href="{:U('/statistics');}" class="h_statistics">数据统计</a> <i></i>
+                    <ul class="drop-down-content">
+                        <li><a href="{:U('/statistics');}">合格统计</a></li>
+                        <li><a href="{:U('/statistics/repeat');}">重复统计</a></li>
+                        <li id="link_stat" style="display:none"><a href="{:U('/statistics/opreports');}">图片统计</a></li>
+                    </ul>
+                </li>
+                <li class="drop-down">
+                    <a class="h_orders" href="{:U('/orders/index', ['type'=>0]);}">工单</a> <i></i>
+                    <ul class="drop-down-content">
+                        <li><a href="{:U('/orders/index', ['type'=>0]);}">工单列表</a></li>
+                        <!--                        <li><a href="{:U('/orders/index', ['cs'=>1, 'type'=>1]);}">重复单</a></li>-->
+                        <li><a href="{:U('/repeated/index');}">重复单</a></li>
+                        <li><a href="{:U('/orders/index', ['status'=>2, 'type'=>1]);}">不合格单</a></li>
+    			{if $Think.session.user.gtype == 0 ||$Think.session.user.gtype == 2}
+			<!--<p>当前用户的 gtype 值为: {$Think.session.user.gtype}</p>-->
+                        <li class="set{$Think.session.user.type==0 || $Think.session.user.type==2 ||$Think.session.user.type==3 ? 0 : 1}"><a href="{:U('/smartlock/index');}">智能锁</a></li>
+		{/if}
+                    </ul>
+                </li>
+                <li class="drop-down">
+                    <a class="h_appeal" href="{:U('/appeal');}">申诉</a> <i></i>
+                    <ul class="drop-down-content">
+                        <li><a href="{:U('/appeal/index', ['appeal'=>1]);}">申诉中</a></li>
+                        <li><a href="{:U('/appeal/index', ['appeal'=>2]);}">申诉通过</a></li>
+                        <li><a href="{:U('/appeal/index', ['appeal'=>3]);}">申诉未通过</a></li>
+                    </ul>
+                </li>
+                <li class="drop-down">
+                    <a class="h_manager" href="{:U('/manager/updatepassword');}">设置</a> <i></i>
+                    <ul class="drop-down-content">
+                        <!--<li class="set{$Think.session.user.type}"><a href="{:U('/manager/likessetting');}">查重设置</a></li>-->
+                        <li><a href="{:U('/manager/updatepassword');}">密码设置</a></li>
+                        <li class="set{$Think.session.user.type}"><a href="{:U('/manager/users');}">账户管理</a></li>
+                        <li class="set{$Think.session.user.type}"><a href="{:U('/labels');}">照片归档</a></li>
+                        <li><a href="{:U('/index/default');}">切换平台</a></li>
+                        <li><a href="{:U('/theme/index');}">主题设置</a></li>
+                        <li><a href="{:U('/index/logout');}">安全退出</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <div class="right-box">
+                <!--<div class="head-img"><img src="_STATIC_/images/egg.jpeg"></div>-->
+                <div class="head-time">
+                    <p>{$Think.session.user.username} 欢迎您！</p>
+                    <p>当前平台: {$Think.session.user.gtype ? '泵房养护' : '水箱清洗'}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(function () {
+            var currentUrl = window.location.href;
+            $('.banner-list a').each(function () {
+                let url = $(this).attr('href');
+                if(currentUrl.indexOf(url) >= 0 ) {
+                    $(this).addClass('active');
+                }
+            });
+        })
+    </script>

@@ -1,0 +1,236 @@
+{include file="common/header"}
+	<div class="list-tool gapBox">
+		<button class="search" onclick="location.reload();">全部</button>
+		<!--<button class="search" onclick="window.location.href='{:U('/statistics/repeat')}'">维保单位</button>-->
+		<form action="{:U('/statistics/repeat')}" style="display:inline;">
+			<!--<select id="type" name="type" class="form-control type" style="width:140px;display:inline;"><option value="">按管理所/站</option><option value="1">按维保单位</option></select>-->
+			<select id="place" name="place" class="form-control type" style="width:140px;display:inline;"><option value="">管理所</option></select>
+			<select id="station" name="station" class="form-control type" style="margin:0 2px;width:90px;display:inline;" disabled><option value="">管理站</option></select>
+			<input style="margin-left:20px;" value="" class="tiem_put" id="start" name="start" placeholder="开始时间" readonly />
+			<span>-</span>
+			<input style="margin:0" value="" class="tiem_put" id="end" name="end" placeholder="结束时间" readonly />
+			<!--<select id="matching" name="matching" style="width:80px;"><option value="">相似度</option><option value="90">≥90</option><option value="91">≥91</option><option value="92">≥92</option><option value="93">≥93</option><option value="94">≥94</option><option value="95">≥95</option><option value="96">≥96</option><option value="97">≥97</option><option value="98">≥98</option><option value="99">≥99</option></select>-->
+			<button class="search" type="submit">查询</button>
+		</form>
+		<button class="search" id="dc">导出</button>
+		<button class="refresh" onclick="cx();">刷新</button>
+		<!--<button class="export" onclick="window.open('{:U('/orders/out', $_GET)}');">导出</button>-->
+	</div><div id="time"></div>
+    <div id="tjs"></div>
+<script src="_STATIC_/js/plugins/layer/layer.min.js"></script>
+<script src="_STATIC_/js/plugins/layer/laydate/laydate.js"></script>
+<script src="_STATIC_/js/plugins/echarts.min.js"></script>
+<script>
+
+	var placeKeys = {$placeKeys ? json_encode($placeKeys, 320) : '[]'};
+	var tmp = {$tmp ? json_encode($tmp, 320) : '[]'}, fs7 = {$fs7 ? json_encode($fs7, 320) : '[]'}, st = '', r0 = '<div class="manage-block ##class##">\
+        <h4>##0##</h4>\
+        <div class="manage-cent">\
+            <div class="leftBox">\
+                <div class="rLeft-cent">\
+                    <p class="rLeft-title">合格情况</p>\
+                    <div class="rLeft-num">\
+                        <p><span>##1##</span>工单总量</p>\
+                        <p><span>##2##</span>合格工单</p>\
+                    </div>\
+                    <div class="rLeft-chart pie"></div>\
+                </div>\
+            </div>\
+            <div class="rightBox">\
+                <div class="rRight-cent">\
+                    <p class="rLeft-title">分类情况</p>\
+                    <ul></ul>\
+                </div>\
+            </div>\
+        </div>\
+    </div>', r1 = '<li>\
+                            <div class="child-order">\
+                                <p class="child-title">##0##</p>\
+                                <div class="order-show">\
+                                    <span class="oNum">##1##</span>\
+                                    <div class="wrapper">\
+                                        <div class="procent">##2##</div>\
+                                        <div class="progress"><span style="width: ##3##;"></span></div>\
+                                    </div>\
+                                </div>\
+                            </div>\
+                        </li>';
+	function bf(a, b, c, d){
+		if(b == 0){
+			if(!d) return '-';
+			return 0;
+		}
+		return ((a / b) * 100).toFixed(c) + '%';
+	}
+	function b0(num){
+		if(num > 9) return num;
+		return '0'+num;
+	}
+	function dd(y, m){
+		if(m == 1) return [y - 1, 12];
+		return [y, m - 1];
+	}
+	function charts(a, b, c){
+		return echarts.init($('.'+ a +' .pie')[0]).setOption({
+            title: {text: bf(c, b, 2), left: "center", top: 'center', textStyle: {color:'#7887A1', fontSize: 16, align: "center"}}, 
+            series: [{name: '访问来源', type: 'pie', radius: ['80%', '100%'], hoverAnimation: false, label: {normal: {show: false, position: 'center', fontSize: 16, formatter: '{d}%'}}, data: [{value: c, name: '搜索引擎', itemStyle:{color: '#F46A6A'}}, {value: b - c, name: '直接访问', itemStyle:{color: '#656FDA'}}]}]
+        });
+	}
+	
+	function ys(){
+		$('.procent').each(function(){
+			var h = parseFloat($(this).text()), y = '';
+			if(h >= 90) y = 'green';
+			if(h < 80) y = 'gold';
+			if(h < 60) y = 'red';
+			$(this).parent().parent().parent().find('p.child-title').addClass(y);
+		});
+	}
+
+	if(!Array.from){
+		Array.from = function(iterable){
+			// IE(包括IE11)没有这个方法,用[].slice.call(new Uint8Array..代替
+			return [].slice.call(new Uint8Array(iterable));
+		}
+	}
+
+	console.log('fs7', fs7);
+	function cx(){
+		$('#tjs').html('');
+		var load = layer.load(1, {shade: [0.5, '#000']});
+		$.post('{:U('/statistics/index')}', {type:$('#type').val(), place:$('#place').val(), station:$('#station').val(), start:$('#start').val(), end:$('#end').val(), matching:$('#matching').val(), clear:'1'}, function(d){
+			layer.close(load);//console.log(d);
+			var resKeys = Object.keys(d).sort().join(",");
+
+			var placeKeys_ = Array.from(placeKeys).sort().join(",")
+                        var userface   = 97;
+                        
+			console.log("reskeys="+resKeys+",placeKeys="+placeKeys_ ,(resKeys == placeKeys_))
+			console.log('d', d)
+			if( resKeys == placeKeys_){
+				// console.log("sort by place")
+				$.each(placeKeys, function(pix, i){
+				// $.each(d, function(i, v){
+					v = d[i];
+					console.log('d', d)
+					console.log('v', v)
+					if(v){
+						// console.log(">>>", v);
+						var c = 'c' + i, sh = r0.replace('##class##', c).replace('##1##', v[1]).replace('##2##', v[4]).replace(new RegExp('##0##', "gm"), v[0]);//.replace(new RegExp('#####', "gm"), _t.data('id'));
+					// console.log(sh)
+						$('#tjs').append(sh);
+						charts(c, v[1], v[4]);
+						$.each(fs7, function(i2, v2){
+							if(v2[0] == 1) z = v[1] - v[2]; else z = v[2];
+							//z = v[1] - v[2]
+							//v1：子单总数 v2：母单总数 v3：照片合格数的数组 v4：合格工单数 v5：
+							ve = v[3][i2] || 0;
+							console.log('test1',v)
+                                                        if (i2 == userface) {
+                                                            console.log('97v[1]', v[1]); 
+							    console.log('97v[2]', v[2]); 
+				                            console.log('97v[3]', v[3]); 
+							    console.log('97v[4]', v[4]); 
+							    console.log('97v[5]', v[5]); 
+							    console.log('97v[6]', v[6]); 
+							    console.log('97v[7]', v[7]); 
+							    ve = v[6][i2];
+                                                            //z = v[5][i2]; 
+							    z = v[7][i2]; 
+                                                            console.log('97人脸', 'pass =>'+ ve, 'all =>' + z); 
+                                                        }
+							console.log('test2',v[1],v[2],ve,z,v2[0])
+							var sh2 = r1.replace('##0##', v2[1]).replace('##1##', ve).replace('##2##', bf(ve, z, 2)).replace('##3##', bf(ve, z, 2, 1));
+							$('.'+ c +' ul').append(sh2);
+						});
+					}
+
+				});
+			}else{
+				$.each(d, function(i, v){
+					// v = d[i];
+					if(v){
+						console.log(">>>", v);
+						var c = 'c' + i, sh = r0.replace('##class##', c).replace('##1##', v[1]).replace('##2##', v[4]).replace(new RegExp('##0##', "gm"), v[0]);//.replace(new RegExp('#####', "gm"), _t.data('id'));
+						$('#tjs').append(sh);
+						charts(c, v[1], v[4]);
+						$.each(fs7, function(i2, v2){
+							if(v2[0] == 1) z = v[1] - v[2]; else z = v[2];
+							ve = v[3][i2] || 0;
+                                                        if (i2 == userface) { 
+                                                            console.log('97v2', v)
+                                                            console.log('97v[5]2', v[5])
+															ve = v[6][i2];
+                                                            //z = v[5][i2]; 
+															z = v[7][i2]; 
+                                                            console.log('97人脸', 'pass =>'+ ve, 'all =>' + z); 
+                                                        }
+							var sh2 = r1.replace('##0##', v2[1]).replace('##1##', ve).replace('##2##', bf(ve, z, 2)).replace('##3##', bf(ve, z, 2, 1));
+							$('.'+ c +' ul').append(sh2);
+						});
+					}
+
+				});
+			}
+
+
+			ys();
+		});
+	}
+	
+	$(function(){
+		$('.h_statistics').addClass('active');
+		var myDate = new Date, year = myDate.getFullYear(), mon = myDate.getMonth() + 1, date = myDate.getDate();
+		/*if(date <= 25){
+			ym = dd(year, mon);	year = ym[0];	mon = ym[1];
+		}*/
+		if(date > 25) date = 25;
+		ym = dd(year, mon);	year0 = ym[0];	mon0 = ym[1];
+		$('#start').val(year0+'-'+b0(mon0)+'-26');
+		$('#end').val(year+'-'+b0(mon)+'-'+b0(date));
+		var start={elem:"#start",format:"YYYY-MM-DD",max:'{:date('Y-m-d')}',min:"2020-09-01",istime:false,istoday:true,choose:function(datas){end.min=datas;end.start=datas}};
+		var end={elem:"#end",format:"YYYY-MM-DD",max:'{:date('Y-m-d')}',min:"2020-09-01",istime:false,istoday:true,choose:function(datas){start.max=datas}};
+		laydate(start);laydate(end);
+		function sst(pid){
+			if(pid == '') $('#station').attr('disabled', 'disabled'); else $('#station').removeAttr('disabled');
+			$('#station').append(st);
+			$('#station option').each(function(){
+				if($(this).val() != '' && $(this).attr('pid') != pid) $(this).remove();
+			});
+			$('#station').val('');
+		}
+		$.each(tmp, function(i, v){
+			var h = '';
+			$.each(v, function(i2, v2){
+				if(i == 'station') st += '<option pid="'+ v2[2] +'" value="'+ v2[0] +'">'+ v2[1] +'</option>'; else h += '<option value="'+ i2 +'">'+ v2 +'</option>';
+			});
+			$('#'+i).append(h);
+		});
+		if('{$Think.session.user.type}' == 2){
+			$('#place').hide();
+			sst('{$Think.session.user.office}');
+		}
+		if('{$Think.session.user.type}' == 3){
+			$('#place').hide();
+			$('#station').hide();
+		}
+		
+		$('#place').val('{:I('place')}').change(function(){
+			sst($(this).val());
+		});
+		$('#type').val('{:I('type')}').change(function(){
+			if($(this).val() == '') $('#place, #station').removeAttr('disabled'); else $('#place, #station').attr('disabled', 'disabled');
+		});
+		
+		$('form').submit(function(){
+			cx();
+			return false;
+		});
+		cx();
+		$('#dc').click(function(){
+			var ggtype = localStorage.getItem('ggtype');
+			window.open('{:U('/statistics/out')}?dc=1&ggtype='+ggtype+'&type='+ $('#type').val() +'&place='+ $('#place').val() +'&station='+ $('#station').val() +'&start='+ $('#start').val() +'&end='+ $('#end').val() +'&matching='+ $('#matching').val());
+		});
+	});
+</script>
+{include file="common/footer"}

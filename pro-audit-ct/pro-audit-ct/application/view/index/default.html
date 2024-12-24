@@ -1,0 +1,25 @@
+{include file="common/header"}
+<style>.whole-bg{height:calc(100vh - 61px) !important;}.ptqh{}.ptqh div{cursor:pointer;font-size:26px;display:inline-table;margin:50px;}</style>
+<script src="_STATIC_/js/plugins/layer/layer.min.js"></script>
+<div class="contentBox" style="height:auto">
+    <div class="whole-bg">
+        <div style="margin:50px auto 0;padding-top:10px;padding-bottom:0;height:390px;text-align:center;font-weight:bold;color:#fff;">
+			<h1 style="font-size:48px;margin:100px 0;">二次供水AI智能审核系统</h1>
+			<div class="ptqh">
+				<div data-type="0"><img src="_STATIC_/images/sxqx.png" /><br />水箱清洗</div>
+				<div data-type="2"><img src="_STATIC_/images/bfyh.png" /><br />泵房养护</div>
+			</div>
+		</div>
+    </div>
+</div>
+<script>
+	$(function(){
+		$('.ptqh div').click(function(){
+			localStorage.setItem('ggtype', $(this).data('type'));
+			$.post('{:U('/index/gtype');}', {gtype:$(this).data('type')}, function(d){
+				location.href='{:U('/index/welcome');}';
+			});
+		});
+	});
+</script>
+{include file="common/footer"}

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置</title>
+    <!--[if lt IE 9]>
+	<script src="_STATIC_/js/html5shiv.min.js"></script>
+	<script src="_STATIC_/js/respond.min.js"></script>
+    <![endif]-->
+    <link rel="shortcut icon" href="/favicon.ico">
+	<link href="_STATIC_/css/bootstrap.min.css" rel="stylesheet">
+    <link href="_STATIC_/css/font-awesome.min.css" rel="stylesheet">
+    <link href="_STATIC_/css/animate.min.css" rel="stylesheet">
+    <link href="_STATIC_/css/style.min.css" rel="stylesheet">
+    <style type="text/css">
+        
+    .tishi{
+
+        color: red;
+        opacity:1;
+    }
+    .snow{
+        color:red;
+        font-size:20px;
+		text-align:center;
+    }
+    </style>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>系统设置</h5>
+                    </div>
+                 <form  id="fileForm" method="post"  action="">
+                     <div class="ibox-content">
+                        <div class="form-horizontal m-t" id="commentForm">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">用户名：</label>
+                                <div class="col-sm-9">
+									<input type="text" name="username" class="form-control" placeholder="请输入用户名，20个字以内" maxlength="20" style=" width:800px;" required="required">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">密码：</label>
+                                <div class="col-sm-9">
+									<input type="password" name="password" class="form-control  opassword2" placeholder="请输入密码，20个字符以内" maxlength="20" style=" width:800px;" required="required">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">确认密码：</label>
+                                <div class="col-sm-9">
+									<input type="password" name="repassword" class="form-control opassword" placeholder="请输入密码" style=" width:800px;" required="required"><span class="tishi"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">电话：</label>
+                                <div class="col-sm-9">
+									<input type="tel" name="tel" class="form-control  ophone1" placeholder="请输入11位电话" style=" width:800px;" required="required"><span class="tishi"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">邮箱：</label>
+                                <div class="col-sm-9">
+									<input type="email" name="email" class="form-control" placeholder="请输入电子邮箱" style=" width:800px;" required="required">
+                                </div>
+                            </div>
+                            
+							<div class="form-group">
+                                <label class="col-sm-2 control-label"></label>
+                                <div class="col-sm-9">
+                                    <button class="btn btn-primary" type="submit" id="submit">确定</button>
+                                </div>
+                            </div>
+						</div>
+                    </div>
+                </form>
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+    <script src="_STATIC_/js/jquery.min.js"></script>
+    <!--[if lt IE 9]>
+    <script src="_STATIC_/js/jquery-1.11.3.min.js"></script>
+    <![endif]-->
+    <script src="_STATIC_/js/bootstrap.min.js"></script>
+    <script src="_STATIC_/js/content.min.js"></script>
+</body>
+
+
+</html>

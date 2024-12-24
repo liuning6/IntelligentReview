@@ -1,0 +1,21 @@
+{
+    "img_mean": [
+        123.675, 
+        116.28, 
+        103.53
+    ], 
+    "channelOrder": "CHW", 
+    "resize_mode": "cv2.INTER_LINEAR", 
+    "resize_library": "opencv", 
+    "rescale_mode": "keep_size", 
+    "scale": [
+        0.017124753831663668, 
+        0.01750700280112045, 
+        0.017429193899782137
+    ], 
+    "colorFormat": "RGB", 
+    "resize": [
+        448, 
+        448
+    ]
+}

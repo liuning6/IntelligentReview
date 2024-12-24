@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>二次供水图像识别</title>
+            <style>td{text-align:center;}</style>
+        </head>
+        <body>
+            <form method="post" enctype="multipart/form-data">
+                图片：<input type="file" name="image" /><br>
+                模型：<input name="res" value="{$res}" /><br>
+                门槛：<input name="threshold" value="{$threshold}" /><br>
+                <input type="submit">
+            </form><br>
+			{$out}
+        </body>
+    </html>
