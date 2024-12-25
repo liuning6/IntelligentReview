@@ -256,6 +256,8 @@ class Appeal extends Common{
 			$pics = $_POST['pics'];
 			// dump($pics);
 			// $pic_group_by_oid = [];
+			// Group photos by usercode instead of order ID to support multiple photos per person
+			$pic_group_by_usercode = [];
 			$pic_group_by_foid = [];
 			foreach ($pics as $key => $value) {
 				if ($value['ycode'] !== 45 && $value['usercode']) {
@@ -264,18 +266,20 @@ class Appeal extends Common{
 						return [0, $value['usercode'] . '人员编号不存在'];
 					}
 					$value['order_foid'] = db('orders')->where(['yid' => $value['order_yid']])->value('id');
-					// $pic_group_by_oid[(string)$value['oid']][] = $value;
-					// $pic_group_by_foid[$value['order_yid']][] = $value;
+					
+					// Group by usercode for validation
+					$pic_group_by_usercode[$value['usercode']][] = $value;
+					// Maintain order-based structure for compatibility
 					$pic_group_by_foid[$value['order_foid']][] = $value;
-
 				}
 			}
-			if (count($pic_group_by_foid) == 0) {
+			if (count($pic_group_by_usercode) == 0) {
 				return [0, '未填写人员编号'];
 			}
-			foreach ($pic_group_by_foid as $key1 => $value1) {
-				if (count($value1) !== 2) {
-					return [0, '请每个工单填写2个人员编号'];
+			// Validate that each photo has a valid usercode, but allow multiple photos per person
+			foreach ($pic_group_by_foid as $order_id => $photos) {
+				if (count($photos) == 0) {
+					return [0, '工单必须至少包含一张照片'];
 				}
 			}
 		}
@@ -353,14 +357,21 @@ class Appeal extends Common{
 					db('orders')->where(['id'=>['in', $ids]])->update(['facestatus' => 1]);
 				}
 				// 终审通过需要将picsJson中的usercode存储进photos表对应纪录
+				// 支持同一个人的多张照片共享相同的usercode
 				$alist = db('appeal')->where(['oid'=>['in', $ids]])->select();
 				foreach($alist as $k1 => $appeal_info) {
 					if ($appeal_info['picsJson']) {
 						$appeal_info['picsJson'] = json_decode($appeal_info['picsJson'], true);
 						if ($appeal_info['picsJson'] && count($appeal_info['picsJson']) > 0) {
+							// Group photos by usercode for batch update
+							$updates_by_usercode = [];
 							foreach ($appeal_info['picsJson'] as $key1 => $value1) {
-								db('photos')->where('id', $value1['picid'])
-									->update(['status' => 1, 'usercode' => $value1['usercode']]);
+								$updates_by_usercode[$value1['usercode']][] = $value1['picid'];
+							}
+							// Update all photos for each usercode at once
+							foreach ($updates_by_usercode as $usercode => $photo_ids) {
+								db('photos')->where('id', 'in', $photo_ids)
+									->update(['status' => 1, 'usercode' => $usercode]);
 							}
 						}
 					}

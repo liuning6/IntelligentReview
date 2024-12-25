@@ -272,9 +272,9 @@ $(function(){
 							let ipt = '';
 							if (element.status == 1) {
 								usercode = element.usercode ? element.usercode : '';
-								ipt = '<input disabled value="' + usercode + '" name="pics[' + element.id + '][usercode]" type="text" placeholder="人员编号" style="width: 78px;border: 1px solid #3C5DE8;border-radius: 4px;padding: 2px 5px;">';
+								ipt = '<input disabled value="' + usercode + '" name="pics[' + element.id + '][usercode]" type="text" placeholder="相同人员填相同编号" style="width: 78px;border: 1px solid #3C5DE8;border-radius: 4px;padding: 2px 5px;">';
 							} else {
-								ipt = '<input value="' + usercode + '" name="pics[' + element.id + '][usercode]" type="text" placeholder="人员编号" style="width: 78px;border: 1px solid #3C5DE8;border-radius: 4px;padding: 2px 5px;">';
+								ipt = '<input value="' + usercode + '" name="pics[' + element.id + '][usercode]" type="text" placeholder="相同人员填相同编号" style="width: 78px;border: 1px solid #3C5DE8;border-radius: 4px;padding: 2px 5px;">';
 							}
 							let url = '/source/pics/'  + element.data_dir + '/' + element.oid + '/' + element.filename + '.' + element.extension;
 							photoListTpl += '<div style="width: 90px;margin-right: 10px">'
